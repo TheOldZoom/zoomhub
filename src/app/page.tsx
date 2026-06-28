@@ -10,9 +10,9 @@ export default function Home() {
     <main className="mx-auto max-w-5xl px-6 bg-background text-foreground min-h-screen">
       <Nav />
       <Hero />
-      <Releases />
       <Github />
       <LastFm />
+      <Releases />
       <Footer />
     </main>
   );

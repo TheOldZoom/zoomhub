@@ -2,10 +2,11 @@ const LASTFM_PLACEHOLDER = "2a96cbd8b46e442fc41c2b86b821562f";
 
 const imageCache = new Map<string, string>();
 const missCache = new Map<string, number>();
-const responseCache = new Map<string, { exp: number; data: any }>();
+
+const topCache = new Map<string, { exp: number; data: any }>();
 
 const MISS_TTL = 1000 * 60 * 60 * 24;
-const RESPONSE_TTL = 1000 * 60;
+const TOP_TTL = 1000 * 60 * 10;
 
 function isMissCached(key: string) {
   const hit = missCache.get(key);
@@ -24,19 +25,19 @@ function getCache(key: string) {
   return imageCache.get(key);
 }
 
-function getResponseCache(key: string) {
-  const hit = responseCache.get(key);
+function getTopCache(key: string) {
+  const hit = topCache.get(key);
   if (!hit) return null;
   if (Date.now() > hit.exp) {
-    responseCache.delete(key);
+    topCache.delete(key);
     return null;
   }
   return hit.data;
 }
 
-function setResponseCache(key: string, data: any) {
-  responseCache.set(key, {
-    exp: Date.now() + RESPONSE_TTL,
+function setTopCache(key: string, data: any) {
+  topCache.set(key, {
+    exp: Date.now() + TOP_TTL,
     data,
   });
 }
@@ -156,11 +157,6 @@ export async function GET() {
     return Response.json({ error: "Missing Last.fm config" }, { status: 400 });
   }
 
-  const cacheKey = `lastfm:${user}`;
-
-  const cached = getResponseCache(cacheKey);
-  if (cached) return Response.json(cached);
-
   const base = "https://ws.audioscrobbler.com/2.0/";
 
   const recentUrl = `${base}?method=user.getrecenttracks&user=${user}&api_key=${apiKey}&format=json&limit=10`;
@@ -168,20 +164,37 @@ export async function GET() {
   const albumsUrl = `${base}?method=user.gettopalbums&user=${user}&api_key=${apiKey}&format=json&limit=10&period=7day`;
   const tracksUrl = `${base}?method=user.gettoptracks&user=${user}&api_key=${apiKey}&format=json&limit=10&period=7day`;
 
-  try {
-    const [recentRes, artistsRes, albumsRes, tracksRes] = await Promise.all([
-      fetch(recentUrl, { cache: "no-store" }),
-      fetch(artistsUrl, { cache: "no-store" }),
-      fetch(albumsUrl, { cache: "no-store" }),
-      fetch(tracksUrl, { cache: "no-store" }),
-    ]);
+  const artistsKey = `topartists:${user}`;
+  const albumsKey = `topalbums:${user}`;
+  const tracksKey = `toptracks:${user}`;
 
-    const [recent, artists, albums, tracks] = await Promise.all([
-      recentRes.json(),
-      artistsRes.json(),
-      albumsRes.json(),
-      tracksRes.json(),
-    ]);
+  try {
+    const cachedArtists = getTopCache(artistsKey);
+    const cachedAlbums = getTopCache(albumsKey);
+    const cachedTracks = getTopCache(tracksKey);
+
+    const recentRes = await fetch(recentUrl, { cache: "no-store" });
+    const recent = await recentRes.json();
+
+    const artistsRes = cachedArtists
+      ? null
+      : await fetch(artistsUrl, { cache: "no-store" });
+
+    const albumsRes = cachedAlbums
+      ? null
+      : await fetch(albumsUrl, { cache: "no-store" });
+
+    const tracksRes = cachedTracks
+      ? null
+      : await fetch(tracksUrl, { cache: "no-store" });
+
+    const artists = cachedArtists ?? (await artistsRes!.json());
+    const albums = cachedAlbums ?? (await albumsRes!.json());
+    const tracks = cachedTracks ?? (await tracksRes!.json());
+
+    if (!cachedArtists) setTopCache(artistsKey, artists);
+    if (!cachedAlbums) setTopCache(albumsKey, albums);
+    if (!cachedTracks) setTopCache(tracksKey, tracks);
 
     const topArtists = artists.topartists?.artist ?? [];
     const topAlbums = albums.topalbums?.album ?? [];
@@ -192,16 +205,12 @@ export async function GET() {
       Promise.all(topTracks.map(enrichTrack)),
     ]);
 
-    const result = {
+    return Response.json({
       recentTracks: recent.recenttracks?.track ?? [],
       topAlbums,
       topArtists: enrichedArtists,
       topTracks: enrichedTracks,
-    };
-
-    setResponseCache(cacheKey, result);
-
-    return Response.json(result);
+    });
   } catch {
     return Response.json(
       { error: "Server error fetching Last.fm data" },

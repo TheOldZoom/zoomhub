@@ -81,7 +81,7 @@ export function Footer() {
           <div className="relative">
             <button
               onClick={() => setOpen(!open)}
-              className="flex items-center justify-center hover:text-foreground transition-colors duration-200"
+              className="flex items-center justify-center hover:text-foreground transition-colors duration-200 cursor-pointer"
             >
               <FaSpotify className="w-6 h-6" />
             </button>
