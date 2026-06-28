@@ -114,7 +114,10 @@ export function LastFm() {
         <div className="grid gap-10 lg:grid-cols-4">
           {(["recent", "tracks", "albums", "artists"] as const).map(
             (section) => (
-              <div key={section} className="lg:block">
+              <div
+                key={section}
+                className={`${section !== tab ? "hidden lg:block" : ""}`}
+              >
                 <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
                   {section}
                 </p>
@@ -127,7 +130,6 @@ export function LastFm() {
         </div>
       ) : (
         <div className="grid gap-10 lg:grid-cols-4">
-          {/* RECENT */}
           <div className={`${tab !== "recent" ? "hidden lg:block" : ""}`}>
             <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
               Recent
@@ -175,7 +177,6 @@ export function LastFm() {
             </div>
           </div>
 
-          {/* TRACKS */}
           <div className={`${tab !== "tracks" ? "hidden lg:block" : ""}`}>
             <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
               Top Tracks
@@ -259,7 +260,6 @@ export function LastFm() {
             </div>
           </div>
 
-          {/* ARTISTS */}
           <div className={`${tab !== "artists" ? "hidden lg:block" : ""}`}>
             <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
               Top Artists
