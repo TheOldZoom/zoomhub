@@ -4,6 +4,17 @@ import { useAlbums } from "@/hooks/useAlbums";
 export function Releases() {
   const albums = useAlbums();
 
+  if (!albums || albums.length === 0) {
+    return (
+      <section className="py-12">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted mb-6">
+          Releases
+        </p>
+        <p className="text-sm text-muted">Couldn’t fetch releases</p>
+      </section>
+    );
+  }
+
   return (
     <section className="py-12">
       <p className="text-xs uppercase tracking-[0.3em] text-muted mb-6">
