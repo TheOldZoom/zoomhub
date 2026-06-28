@@ -87,7 +87,7 @@ export function Footer() {
             </button>
 
             {open && (
-              <div className="absolute mt-2 left-1/2 -translate-x-1/2 flex flex-col gap-2 border border-border/40 bg-background p-3 min-w-[140px]">
+              <div className="absolute mt-2 left-1/2 -translate-x-1/2 flex flex-col gap-2 border border-border/40 bg-background p-3 min-w-35">
                 {spotifyAccounts.map((acc) => (
                   <a
                     key={acc.name}
