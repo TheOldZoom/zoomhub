@@ -20,7 +20,9 @@ function timeAgo(timestamp: string) {
 
 function getImage(image: any): string {
   if (!image) return "";
+
   if (typeof image === "string") return image;
+
   if (Array.isArray(image)) {
     return (
       image.find((i) => i.size === "extralarge")?.["#text"] ||
@@ -30,6 +32,7 @@ function getImage(image: any): string {
       ""
     );
   }
+
   return "";
 }
 
@@ -82,8 +85,6 @@ export function LastFm() {
     artists: Array.from({ length: 8 }),
   };
 
-  const show = (key: string) => tab === key;
-
   return (
     <section className="py-12 relative">
       <div className="mb-8">
@@ -113,16 +114,10 @@ export function LastFm() {
         <div className="grid gap-10 lg:grid-cols-4">
           {(["recent", "tracks", "albums", "artists"] as const).map(
             (section) => (
-              <div
-                key={section}
-                className={`lg:block ${
-                  tab !== section ? "hidden lg:block" : ""
-                }`}
-              >
+              <div key={section} className="lg:block">
                 <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
                   {section}
                 </p>
-
                 {skeletonMap[section].map((_, i) => (
                   <SkeletonRow key={i} />
                 ))}
@@ -187,26 +182,38 @@ export function LastFm() {
             </p>
 
             <div className="space-y-2">
-              {topTracks.map((track: any, i: number) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 bg-border/40 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-sm truncate">{track.name}</p>
-                      <p className="text-xs text-muted truncate">
-                        {track.artist?.name || track.artist?.["#text"]}
-                      </p>
-                    </div>
-                  </div>
+              {topTracks.map((track: any, i: number) => {
+                const image = getImage(track.image);
 
-                  <span className="text-xs text-muted whitespace-nowrap">
-                    {Number(track.playcount || 0).toLocaleString()}
-                  </span>
-                </div>
-              ))}
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {image ? (
+                        <img
+                          src={image}
+                          className="w-10 h-10 object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-border/40 shrink-0" />
+                      )}
+
+                      <div className="min-w-0">
+                        <p className="text-sm truncate">{track.name}</p>
+                        <p className="text-xs text-muted truncate">
+                          {track.artist?.name || track.artist?.["#text"]}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-xs text-muted whitespace-nowrap">
+                      {Number(track.playcount || 0).toLocaleString()}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -217,26 +224,38 @@ export function LastFm() {
             </p>
 
             <div className="space-y-2">
-              {topAlbums.map((album: any, i: number) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 bg-border/40 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-sm truncate">{album.name}</p>
-                      <p className="text-xs text-muted truncate">
-                        {album.artist?.name || album.artist?.["#text"]}
-                      </p>
-                    </div>
-                  </div>
+              {topAlbums.map((album: any, i: number) => {
+                const image = getImage(album.image);
 
-                  <span className="text-xs text-muted whitespace-nowrap">
-                    {Number(album.playcount || 0).toLocaleString()}
-                  </span>
-                </div>
-              ))}
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {image ? (
+                        <img
+                          src={image}
+                          className="w-10 h-10 object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-border/40 shrink-0" />
+                      )}
+
+                      <div className="min-w-0">
+                        <p className="text-sm truncate">{album.name}</p>
+                        <p className="text-xs text-muted truncate">
+                          {album.artist?.name || album.artist?.["#text"]}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="text-xs text-muted whitespace-nowrap">
+                      {Number(album.playcount || 0).toLocaleString()}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -247,21 +266,33 @@ export function LastFm() {
             </p>
 
             <div className="space-y-2">
-              {topArtists.map((artist: any, i: number) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-full bg-border/40 shrink-0" />
-                    <p className="text-sm truncate">{artist.name}</p>
-                  </div>
+              {topArtists.map((artist: any, i: number) => {
+                const image = getImage(artist.image);
 
-                  <span className="text-xs text-muted whitespace-nowrap">
-                    {Number(artist.playcount || 0).toLocaleString()}
-                  </span>
-                </div>
-              ))}
+                return (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {image ? (
+                        <img
+                          src={image}
+                          className="w-10 h-10 rounded-full object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-border/40 shrink-0" />
+                      )}
+
+                      <p className="text-sm truncate">{artist.name}</p>
+                    </div>
+
+                    <span className="text-xs text-muted whitespace-nowrap">
+                      {Number(artist.playcount || 0).toLocaleString()}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
