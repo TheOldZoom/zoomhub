@@ -1,17 +1,28 @@
 import { useEffect, useState } from "react";
 
 export function useLastFm() {
-  const [tracks, setTracks] = useState<any[]>([]);
+  const [data, setData] = useState<{
+    recentTracks: any[];
+    topAlbums: any[];
+    topArtists: any[];
+    topTracks: any[];
+  }>({
+    recentTracks: [],
+    topAlbums: [],
+    topArtists: [],
+    topTracks: [],
+  });
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/lastfm")
       .then((r) => r.json())
       .then((data) => {
-        setTracks(data?.recenttracks?.track || []);
+        setData(data);
         setLoading(false);
       });
   }, []);
 
-  return { tracks, loading };
+  return { ...data, loading };
 }
