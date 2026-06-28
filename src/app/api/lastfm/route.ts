@@ -2,13 +2,14 @@ const LASTFM_PLACEHOLDER = "2a96cbd8b46e442fc41c2b86b821562f";
 
 const imageCache = new Map<string, string>();
 const missCache = new Map<string, number>();
+const responseCache = new Map<string, { exp: number; data: any }>();
 
 const MISS_TTL = 1000 * 60 * 60 * 24;
+const RESPONSE_TTL = 1000 * 60;
 
 function isMissCached(key: string) {
   const hit = missCache.get(key);
-  if (!hit) return false;
-  return Date.now() < hit;
+  return !!hit && Date.now() < hit;
 }
 
 function setMiss(key: string) {
@@ -23,13 +24,29 @@ function getCache(key: string) {
   return imageCache.get(key);
 }
 
+function getResponseCache(key: string) {
+  const hit = responseCache.get(key);
+  if (!hit) return null;
+  if (Date.now() > hit.exp) {
+    responseCache.delete(key);
+    return null;
+  }
+  return hit.data;
+}
+
+function setResponseCache(key: string, data: any) {
+  responseCache.set(key, {
+    exp: Date.now() + RESPONSE_TTL,
+    data,
+  });
+}
+
 function isPlaceholder(url: string) {
   return url.includes(LASTFM_PLACEHOLDER);
 }
 
 function pickLastFmImage(images: any[] = []) {
   if (!Array.isArray(images)) return "";
-
   return (
     images.find((i) => i.size === "extralarge")?.["#text"] ||
     images.find((i) => i.size === "large")?.["#text"] ||
@@ -38,7 +55,7 @@ function pickLastFmImage(images: any[] = []) {
   );
 }
 
-async function verifyImage(url: string): Promise<boolean> {
+async function verifyImage(url: string) {
   try {
     const res = await fetch(url, { method: "HEAD" });
     return res.ok;
@@ -47,12 +64,10 @@ async function verifyImage(url: string): Promise<boolean> {
   }
 }
 
-async function getPageImage(url: string): Promise<string> {
+async function getPageImage(url: string) {
   try {
     const res = await fetch(url, {
-      headers: {
-        "user-agent": "Mozilla/5.0",
-      },
+      headers: { "user-agent": "Mozilla/5.0" },
     });
 
     if (!res.ok) return "";
@@ -64,8 +79,7 @@ async function getPageImage(url: string): Promise<string> {
     );
 
     const image = match?.[1] ?? "";
-    if (!image) return "";
-    if (isPlaceholder(image)) return "";
+    if (!image || isPlaceholder(image)) return "";
 
     return image;
   } catch {
@@ -73,11 +87,8 @@ async function getPageImage(url: string): Promise<string> {
   }
 }
 
-/* ---------------- ARTISTS ---------------- */
-
 async function enrichArtistImage(artist: any) {
   const key = `artist:${artist.url || artist.name}`;
-  if (!key) return artist;
 
   const cached = getCache(key);
   if (cached) return { ...artist, image: cached };
@@ -87,8 +98,7 @@ async function enrichArtistImage(artist: any) {
   let image = pickLastFmImage(artist.image);
 
   if (image && !isPlaceholder(image)) {
-    const ok = await verifyImage(image);
-    if (ok) {
+    if (await verifyImage(image)) {
       setCache(key, image);
       return { ...artist, image };
     }
@@ -96,13 +106,9 @@ async function enrichArtistImage(artist: any) {
 
   if (artist.url) {
     const pageImage = await getPageImage(artist.url);
-
-    if (pageImage) {
-      const ok = await verifyImage(pageImage);
-      if (ok) {
-        setCache(key, pageImage);
-        return { ...artist, image: pageImage };
-      }
+    if (pageImage && (await verifyImage(pageImage))) {
+      setCache(key, pageImage);
+      return { ...artist, image: pageImage };
     }
   }
 
@@ -110,47 +116,37 @@ async function enrichArtistImage(artist: any) {
   return artist;
 }
 
-/* ---------------- TRACKS ---------------- */
-
 async function enrichTrack(track: any) {
   const key = `track:${track.url || track.name + track.artist?.name}`;
-  if (!key) return track;
 
   const cached = getCache(key);
   if (cached) return { ...track, image: cached };
 
   if (isMissCached(key)) return track;
 
-  // 1. Last.fm album art (most important for tracks)
-  let image = track.image?.length > 0 ? pickLastFmImage(track.image) : "";
+  let image =
+    Array.isArray(track.image) && track.image.length
+      ? pickLastFmImage(track.image)
+      : "";
 
   if (image && !isPlaceholder(image)) {
-    const ok = await verifyImage(image);
-    if (ok) {
+    if (await verifyImage(image)) {
       setCache(key, image);
       return { ...track, image };
     }
   }
 
-  // 2. Try album page / track page OG image
   if (track.url) {
     const pageImage = await getPageImage(track.url);
-
-    if (pageImage) {
-      const ok = await verifyImage(pageImage);
-
-      if (ok) {
-        setCache(key, pageImage);
-        return { ...track, image: pageImage };
-      }
+    if (pageImage && (await verifyImage(pageImage))) {
+      setCache(key, pageImage);
+      return { ...track, image: pageImage };
     }
   }
 
   setMiss(key);
   return track;
 }
-
-/* ---------------- ROUTE ---------------- */
 
 export async function GET() {
   const user = process.env.LASTFM_USER;
@@ -159,6 +155,11 @@ export async function GET() {
   if (!user || !apiKey) {
     return Response.json({ error: "Missing Last.fm config" }, { status: 400 });
   }
+
+  const cacheKey = `lastfm:${user}`;
+
+  const cached = getResponseCache(cacheKey);
+  if (cached) return Response.json(cached);
 
   const base = "https://ws.audioscrobbler.com/2.0/";
 
@@ -169,10 +170,10 @@ export async function GET() {
 
   try {
     const [recentRes, artistsRes, albumsRes, tracksRes] = await Promise.all([
-      fetch(recentUrl, { next: { revalidate: 60 } }),
-      fetch(artistsUrl, { next: { revalidate: 60 } }),
-      fetch(albumsUrl, { next: { revalidate: 60 } }),
-      fetch(tracksUrl, { next: { revalidate: 60 } }),
+      fetch(recentUrl, { cache: "no-store" }),
+      fetch(artistsUrl, { cache: "no-store" }),
+      fetch(albumsUrl, { cache: "no-store" }),
+      fetch(tracksUrl, { cache: "no-store" }),
     ]);
 
     const [recent, artists, albums, tracks] = await Promise.all([
@@ -191,12 +192,16 @@ export async function GET() {
       Promise.all(topTracks.map(enrichTrack)),
     ]);
 
-    return Response.json({
+    const result = {
       recentTracks: recent.recenttracks?.track ?? [],
       topAlbums,
       topArtists: enrichedArtists,
       topTracks: enrichedTracks,
-    });
+    };
+
+    setResponseCache(cacheKey, result);
+
+    return Response.json(result);
   } catch {
     return Response.json(
       { error: "Server error fetching Last.fm data" },
