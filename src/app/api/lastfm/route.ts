@@ -64,7 +64,6 @@ async function getPageImage(url: string): Promise<string> {
     );
 
     const image = match?.[1] ?? "";
-
     if (!image) return "";
     if (isPlaceholder(image)) return "";
 
@@ -74,9 +73,10 @@ async function getPageImage(url: string): Promise<string> {
   }
 }
 
-async function enrichArtistImage(artist: any) {
-  const key = artist.url || artist.name;
+/* ---------------- ARTISTS ---------------- */
 
+async function enrichArtistImage(artist: any) {
+  const key = `artist:${artist.url || artist.name}`;
   if (!key) return artist;
 
   const cached = getCache(key);
@@ -99,7 +99,6 @@ async function enrichArtistImage(artist: any) {
 
     if (pageImage) {
       const ok = await verifyImage(pageImage);
-
       if (ok) {
         setCache(key, pageImage);
         return { ...artist, image: pageImage };
@@ -110,6 +109,48 @@ async function enrichArtistImage(artist: any) {
   setMiss(key);
   return artist;
 }
+
+/* ---------------- TRACKS ---------------- */
+
+async function enrichTrack(track: any) {
+  const key = `track:${track.url || track.name + track.artist?.name}`;
+  if (!key) return track;
+
+  const cached = getCache(key);
+  if (cached) return { ...track, image: cached };
+
+  if (isMissCached(key)) return track;
+
+  // 1. Last.fm album art (most important for tracks)
+  let image = track.image?.length > 0 ? pickLastFmImage(track.image) : "";
+
+  if (image && !isPlaceholder(image)) {
+    const ok = await verifyImage(image);
+    if (ok) {
+      setCache(key, image);
+      return { ...track, image };
+    }
+  }
+
+  // 2. Try album page / track page OG image
+  if (track.url) {
+    const pageImage = await getPageImage(track.url);
+
+    if (pageImage) {
+      const ok = await verifyImage(pageImage);
+
+      if (ok) {
+        setCache(key, pageImage);
+        return { ...track, image: pageImage };
+      }
+    }
+  }
+
+  setMiss(key);
+  return track;
+}
+
+/* ---------------- ROUTE ---------------- */
 
 export async function GET() {
   const user = process.env.LASTFM_USER;
@@ -142,23 +183,19 @@ export async function GET() {
     ]);
 
     const topArtists = artists.topartists?.artist ?? [];
+    const topAlbums = albums.topalbums?.album ?? [];
     const topTracks = tracks.toptracks?.track ?? [];
 
-    const [finalArtists] = await Promise.all([
-      Promise.allSettled(
-        topArtists.map((artist: any) => enrichArtistImage(artist)),
-      ),
+    const [enrichedArtists, enrichedTracks] = await Promise.all([
+      Promise.all(topArtists.map(enrichArtistImage)),
+      Promise.all(topTracks.map(enrichTrack)),
     ]);
-
-    const enrichedArtists = finalArtists
-      .map((r) => (r.status === "fulfilled" ? r.value : null))
-      .filter(Boolean);
 
     return Response.json({
       recentTracks: recent.recenttracks?.track ?? [],
-      topAlbums: albums.topalbums?.album ?? [],
+      topAlbums,
       topArtists: enrichedArtists,
-      topTracks,
+      topTracks: enrichedTracks,
     });
   } catch {
     return Response.json(
