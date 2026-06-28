@@ -205,11 +205,6 @@ export async function GET() {
       Promise.all(topTracks.map(enrichTrack)),
     ]);
 
-    const sleep = (ms: number) =>
-      new Promise((resolve) => setTimeout(resolve, ms));
-
-    await sleep(10000);
-
     return Response.json({
       recentTracks: recent.recenttracks?.track ?? [],
       topAlbums,
