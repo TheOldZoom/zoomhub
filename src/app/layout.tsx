@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     siteName: "Xavier Zoom Boulanger",
     images: [
       {
-        url: "/image.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "Xavier Zoom Boulanger",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Xavier Zoom Boulanger",
     description: "Developer, artist, and a random guy that enjoys life.",
-    images: ["/image.png"],
+    images: ["/opengraph-image"],
   },
 };
 
