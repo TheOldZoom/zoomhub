@@ -4,6 +4,7 @@ import { Releases } from "@/components/Releases";
 import { Github } from "@/components/Github";
 import { Footer } from "@/components/Footer";
 import { LastFm } from "@/components/LastFm";
+import { ChessCom } from "@/components/ChessCom";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <Github />
       <LastFm />
       <Releases />
+      <ChessCom />
       <Footer />
     </main>
   );
