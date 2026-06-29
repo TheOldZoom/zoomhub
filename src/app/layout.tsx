@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     default: "Xavier Zoom Boulanger",
     template: "%s | Xavier Zoom Boulanger",
   },
-  description: "Developer, Photograhper, and a random guy that enjoys life.",
+  description: "Developer, Photographer, and a random guy that enjoys life.",
   metadataBase: new URL("https://zoomhub.xyz"),
 
   icons: {
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
   openGraph: {
     title: "Xavier Zoom Boulanger",
-    description: "Developer, Photograhper, and a random guy that enjoys life.",
+    description: "Developer, Photographer, and a random guy that enjoys life.",
     url: "https://zoomhub.xyz",
     siteName: "Xavier Zoom Boulanger",
     images: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Xavier Zoom Boulanger",
-    description: "Developer, Photograhper, and a random guy that enjoys life.",
+    description: "Developer, Photographer, and a random guy that enjoys life.",
     images: ["/opengraph-image"],
   },
 };
