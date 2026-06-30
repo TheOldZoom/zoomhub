@@ -15,7 +15,8 @@ async function setTopCache(key: string, data: any, ttl = TOP_TTL) {
 }
 
 async function getCache(key: string) {
-  return await readCache(key);
+  const entry = await readCache(key);
+  return entry?.miss === true ? null : entry;
 }
 
 async function setCache(key: string, value: string) {
@@ -56,17 +57,25 @@ function buildUrl(method: string, params: Record<string, string> = {}) {
 }
 
 function isPlaceholder(url: string) {
-  return url.includes(LASTFM_PLACEHOLDER);
+  return !url || url.includes(LASTFM_PLACEHOLDER);
 }
 
-function pickLastFmImage(images: any[] = []) {
-  if (!Array.isArray(images)) return "";
-  return (
-    images.find((i) => i.size === "extralarge")?.["#text"] ||
-    images.find((i) => i.size === "large")?.["#text"] ||
-    images.find((i) => i.size === "medium")?.["#text"] ||
-    ""
-  );
+function pickLastFmImage(images: any): string {
+  if (!images) return "";
+  if (typeof images === "string") return images;
+  if (Array.isArray(images)) {
+    return (
+      images.find((i) => i.size === "extralarge")?.["#text"] ||
+      images.find((i) => i.size === "mega")?.["#text"] ||
+      images.find((i) => i.size === "large")?.["#text"] ||
+      images.find((i) => i.size === "medium")?.["#text"] ||
+      ""
+    );
+  }
+  if (typeof images === "object" && typeof images["#text"] === "string") {
+    return images["#text"];
+  }
+  return "";
 }
 
 async function verifyImage(url: string) {
@@ -104,7 +113,6 @@ async function enrichArtistImage(artist: any) {
   const key = `artist:${artist.url || artist.name}`;
   const cached = await getCache(key);
   if (cached) return { ...artist, image: cached };
-  if (await isMissCached(key)) return artist;
 
   let image = pickLastFmImage(artist.image);
   if (image && !isPlaceholder(image)) {
@@ -130,7 +138,6 @@ async function enrichTrack(track: any) {
   const key = `track:${track.url || track.name + track.artist?.name}`;
   const cached = await getCache(key);
   if (cached) return { ...track, image: cached };
-  if (await isMissCached(key)) return track;
 
   let image =
     Array.isArray(track.image) && track.image.length
@@ -216,11 +223,6 @@ export async function fetchLastFmRecent(limit = 20) {
 }
 
 export async function fetchLastFmTopArtists(period = "7day", limit = 20) {
-  const { user } = getApiConfig();
-  const cacheKey = `topartists:${user}:${period}:${limit}`;
-  const cached = await getTopCache(cacheKey);
-  if (cached) return cached;
-
   let artists: any[];
   if (limit === 0) {
     artists = await fetchLastFmPaged(
@@ -239,16 +241,13 @@ export async function fetchLastFmTopArtists(period = "7day", limit = 20) {
     artists = body.topartists?.artist ?? [];
   }
 
-  const enriched = await Promise.all(artists.map(enrichArtistImage));
-  await setTopCache(cacheKey, enriched);
-  return enriched;
+  return await Promise.all(artists.map(enrichArtistImage));
 }
 
 async function enrichAlbumImage(album: any) {
   const key = `album:${album.url || album.name + album.artist?.name}`;
   const cached = await getCache(key);
   if (cached) return { ...album, image: cached };
-  if (await isMissCached(key)) return album;
 
   let image = pickLastFmImage(album.image);
   if (image && !isPlaceholder(image)) {
@@ -271,11 +270,6 @@ async function enrichAlbumImage(album: any) {
 }
 
 export async function fetchLastFmTopAlbums(period = "7day", limit = 20) {
-  const { user } = getApiConfig();
-  const cacheKey = `topalbums:${user}:${period}:${limit}`;
-  const cached = await getTopCache(cacheKey);
-  if (cached) return cached;
-
   let albums: any[];
   if (limit === 0) {
     albums = await fetchLastFmPaged(
@@ -294,17 +288,10 @@ export async function fetchLastFmTopAlbums(period = "7day", limit = 20) {
     albums = body.topalbums?.album ?? [];
   }
 
-  const enriched = await Promise.all(albums.map(enrichAlbumImage));
-  await setTopCache(cacheKey, enriched);
-  return enriched;
+  return await Promise.all(albums.map(enrichAlbumImage));
 }
 
 export async function fetchLastFmTopTracks(period = "7day", limit = 20) {
-  const { user } = getApiConfig();
-  const cacheKey = `toptracks:${user}:${period}:${limit}`;
-  const cached = await getTopCache(cacheKey);
-  if (cached) return cached;
-
   let tracks: any[];
   if (limit === 0) {
     tracks = await fetchLastFmPaged(
@@ -323,9 +310,7 @@ export async function fetchLastFmTopTracks(period = "7day", limit = 20) {
     tracks = body.toptracks?.track ?? [];
   }
 
-  const enriched = await Promise.all(tracks.map(enrichTrack));
-  await setTopCache(cacheKey, enriched);
-  return enriched;
+  return await Promise.all(tracks.map(enrichTrack));
 }
 
 export async function fetchLastFmUser() {

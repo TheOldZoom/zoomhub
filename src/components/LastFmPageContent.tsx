@@ -141,7 +141,7 @@ export function LastFmPageContent() {
     setLoading(true);
     setError(null);
 
-    fetch(`/api/lastfm?period=${period}`)
+    fetch(`/api/lastfm?period=${period}`, { cache: "no-store" })
       .then(async (res) => {
         const body = await res.json();
         if (!res.ok) {
