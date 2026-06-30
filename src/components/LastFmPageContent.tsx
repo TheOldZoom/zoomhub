@@ -180,10 +180,10 @@ export function LastFmPageContent() {
   const topTracks = data?.topTracks ?? [];
   const topAlbums = data?.topAlbums ?? [];
 
-  const displayRecentTracks = recentTracks.slice(0, 10);
-  const displayTopArtists = topArtists.slice(0, 10);
-  const displayTopTracks = topTracks.slice(0, 10);
-  const displayTopAlbums = topAlbums.slice(0, 10);
+  const displayRecentTracks = recentTracks.slice(0, 50);
+  const displayTopArtists = topArtists.slice(0, 50);
+  const displayTopTracks = topTracks.slice(0, 50);
+  const displayTopAlbums = topAlbums.slice(0, 50);
 
   const topArtist = topArtists[0];
   const topTrack = topTracks[0];

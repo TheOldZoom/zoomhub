@@ -35,10 +35,10 @@ export async function GET(req: Request) {
     const [user, recentTracks, topArtists, topAlbums, topTracks] =
       await Promise.all([
         fetchLastFmUser(),
-        fetchLastFmRecent(20),
-        fetchLastFmTopArtists(period, 20),
-        fetchLastFmTopAlbums(period, 20),
-        fetchLastFmTopTracks(period, 20),
+        fetchLastFmRecent(50),
+        fetchLastFmTopArtists(period, 50),
+        fetchLastFmTopAlbums(period, 50),
+        fetchLastFmTopTracks(period, 50),
       ]);
 
     const payload = {
