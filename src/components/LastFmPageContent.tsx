@@ -12,9 +12,16 @@ const PERIODS = [
   { label: "7d", value: "7day" },
   { label: "30d", value: "1month" },
   { label: "90d", value: "3month" },
-  { label: "6m", value: "6month" },
-  { label: "1y", value: "12month" },
-  { label: "alltime", value: "overall" },
+  { label: "180d", value: "6month" },
+  { label: "365d", value: "12month" },
+  {
+    label: `${formatCount(
+      Math.floor(
+        (Date.now() - new Date("2024-08-23").getTime()) / (1000 * 60 * 60 * 24),
+      ),
+    )}d`,
+    value: "overall",
+  },
 ] as const;
 
 type Period = (typeof PERIODS)[number]["value"];
