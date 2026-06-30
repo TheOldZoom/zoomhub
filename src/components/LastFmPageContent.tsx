@@ -247,7 +247,6 @@ export function LastFmPageContent() {
           </div>
 
           <div className="grid gap-10 lg:grid-cols-4 min-w-0">
-            {" "}
             <div
               className={`${tab !== "recent" ? "hidden lg:block" : ""} min-w-0`}
             >
@@ -271,8 +270,8 @@ export function LastFmPageContent() {
           </div>
         </>
       ) : error ? (
-        <div className="rounded-xl border border-red-400/40 bg-background p-8 text-sm text-red-500">
-          {error}
+        <div className="text-xs uppercase tracking-[0.3em] text-muted">
+          Try again later
         </div>
       ) : (
         <>
