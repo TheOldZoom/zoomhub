@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useLastFm } from "@/hooks/useLastFm";
+import { LastFmSection } from "@/components/LastFmSection";
 
 function timeAgo(timestamp: string) {
   const now = Date.now();
@@ -13,9 +15,9 @@ function timeAgo(timestamp: string) {
   const days = Math.floor(diff / 86400);
 
   if (diff < 60) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  return `${days}d ago`;
+  if (minutes < 60) return `${minutes}m`;
+  if (hours < 24) return `${hours}h`;
+  return `${days}d`;
 }
 
 function getImage(image: any): string {
@@ -77,6 +79,9 @@ export function LastFm() {
   }, []);
 
   const visibleTracks = recentTracks.slice(0, visibleCount);
+  const displayTopTracks = topTracks.slice(0, 10);
+  const displayTopAlbums = topAlbums.slice(0, 10);
+  const displayTopArtists = topArtists.slice(0, 10);
 
   const skeletonMap = {
     recent: Array.from({ length: 8 }),
@@ -87,11 +92,19 @@ export function LastFm() {
 
   return (
     <section className="py-12 relative">
-      <div className="mb-8">
-        <p className="text-xs uppercase tracking-[0.3em] text-muted">
-          Listening
-        </p>
-        <p className="mt-2 text-xs text-muted">Weekly listening statistics</p>
+      <div className="flex items-end justify-between mb-8 gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-muted">
+            Last.fm
+          </p>
+          <p className="mt-2 text-xs text-muted">Weekly Stats</p>
+        </div>
+        <Link
+          href="/lastfm"
+          className="text-[10px] uppercase tracking-[0.15em] text-muted hover:text-foreground transition"
+        >
+          View all
+        </Link>
       </div>
 
       <div className="flex lg:hidden mb-6 gap-2">
@@ -112,195 +125,169 @@ export function LastFm() {
 
       {loading ? (
         <div className="grid gap-10 lg:grid-cols-4 min-w-0">
-          {" "}
           {(["recent", "tracks", "albums", "artists"] as const).map(
             (section) => (
-              <div
+              <LastFmSection
                 key={section}
-                className={`${section !== tab ? "hidden lg:block" : ""}`}
-              >
-                <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
-                  {section}
-                </p>
-                {skeletonMap[section].map((_, i) => (
-                  <SkeletonRow key={i} />
-                ))}
-              </div>
+                title={section}
+                hidden={section !== tab}
+                items={skeletonMap[section]}
+                renderItem={(_, i: number) => <SkeletonRow key={i} />}
+              />
             ),
           )}
         </div>
       ) : (
-        <div className="grid gap-10 lg:grid-cols-4 min-w-0">
-          <div
-            className={`${tab !== "recent" ? "hidden lg:block" : ""} min-w-0`}
-          >
-            {" "}
-            <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
-              Recent
-            </p>
-            <div className="space-y-2">
-              {visibleTracks.map((track: any, i: number) => {
-                const image = getImage(track.image);
+        <div className="grid gap-10 lg:grid-cols-4 min-w-0 w-full">
+          <LastFmSection
+            title="Recent"
+            hidden={tab !== "recent"}
+            items={visibleTracks}
+            renderItem={(track: any, i: number) => {
+              const image = getImage(track.image);
 
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      {image ? (
-                        <img
-                          src={image}
-                          className="w-10 h-10 object-cover shrink-0"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 bg-border/40 shrink-0" />
-                      )}
+              return (
+                <div
+                  key={i}
+                  className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    {image ? (
+                      <img
+                        src={image}
+                        className="w-10 h-10 object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-border/40 shrink-0" />
+                    )}
 
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm truncate">{track.name}</p>
-                        <p className="text-xs text-muted truncate">
-                          {track.artist?.["#text"]}
-                        </p>
-                      </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm truncate">{track.name}</p>
+                      <p className="text-xs text-muted truncate">
+                        {track.artist?.["#text"]}
+                      </p>
                     </div>
-
-                    <span className="text-xs text-muted whitespace-nowrap shrink-0">
-                      {" "}
-                      {track["@attr"]?.nowplaying
-                        ? "Now"
-                        : track.date?.uts
-                          ? timeAgo(track.date.uts)
-                          : ""}
-                    </span>
                   </div>
-                );
-              })}
 
-              <div ref={loadMoreRef} className="h-10" />
-            </div>
-          </div>
-          <div
-            className={`${tab !== "tracks" ? "hidden lg:block" : ""} min-w-0`}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
-              Top Tracks
-            </p>
-            <div className="space-y-2">
-              {topTracks.map((track: any, i: number) => {
-                const image = getImage(track.image);
+                  <span className="text-xs text-muted whitespace-nowrap shrink-0">
+                    {track["@attr"]?.nowplaying
+                      ? "Now"
+                      : track.date?.uts
+                        ? timeAgo(track.date.uts)
+                        : ""}
+                  </span>
+                </div>
+              );
+            }}
+            footer={<div ref={loadMoreRef} className="h-10" />}
+          />
+          <LastFmSection
+            title="Top Tracks"
+            hidden={tab !== "tracks"}
+            items={displayTopTracks}
+            renderItem={(track: any, i: number) => {
+              const image = getImage(track.image);
 
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      {image ? (
-                        <img
-                          src={image}
-                          className="w-10 h-10 object-cover shrink-0"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 bg-border/40 shrink-0" />
-                      )}
+              return (
+                <div
+                  key={i}
+                  className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    {image ? (
+                      <img
+                        src={image}
+                        className="w-10 h-10 object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-border/40 shrink-0" />
+                    )}
 
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm truncate">{track.name}</p>
-                        <p className="text-xs text-muted truncate">
-                          {track.artist?.name || track.artist?.["#text"]}
-                        </p>
-                      </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm truncate">{track.name}</p>
+                      <p className="text-xs text-muted truncate">
+                        {track.artist?.name || track.artist?.["#text"]}
+                      </p>
                     </div>
-
-                    <span className="text-xs text-muted whitespace-nowrap shrink-0">
-                      {" "}
-                      {Number(track.playcount || 0).toLocaleString()}
-                    </span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-          <div
-            className={`${tab !== "albums" ? "hidden lg:block" : ""} min-w-0`}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
-              Top Albums
-            </p>
-            <div className="space-y-2">
-              {topAlbums.map((album: any, i: number) => {
-                const image = getImage(album.image);
 
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      {image ? (
-                        <img
-                          src={image}
-                          className="w-10 h-10 object-cover shrink-0"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 bg-border/40 shrink-0" />
-                      )}
+                  <span className="text-xs text-muted whitespace-nowrap shrink-0">
+                    {Number(track.playcount || 0).toLocaleString()}
+                  </span>
+                </div>
+              );
+            }}
+          />
+          <LastFmSection
+            title="Top Albums"
+            hidden={tab !== "albums"}
+            items={displayTopAlbums}
+            renderItem={(album: any, i: number) => {
+              const image = getImage(album.image);
 
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm truncate">{album.name}</p>
-                        <p className="text-xs text-muted truncate">
-                          {album.artist?.name || album.artist?.["#text"]}
-                        </p>
-                      </div>
+              return (
+                <div
+                  key={i}
+                  className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    {image ? (
+                      <img
+                        src={image}
+                        className="w-10 h-10 object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-border/40 shrink-0" />
+                    )}
+
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm truncate">{album.name}</p>
+                      <p className="text-xs text-muted truncate">
+                        {album.artist?.name || album.artist?.["#text"]}
+                      </p>
                     </div>
-
-                    <span className="text-xs text-muted whitespace-nowrap shrink-0">
-                      {" "}
-                      {Number(album.playcount || 0).toLocaleString()}
-                    </span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-          <div
-            className={`${tab !== "artists" ? "hidden lg:block" : ""} min-w-0`}
-          >
-            <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
-              Top Artists
-            </p>
-            <div className="space-y-2">
-              {topArtists.map((artist: any, i: number) => {
-                const image = getImage(artist.image);
 
-                return (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      {image ? (
-                        <img
-                          src={image}
-                          className="w-10 h-10 rounded-full object-cover shrink-0"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-border/40 shrink-0" />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm truncate">{artist.name}</p>
-                      </div>
+                  <span className="text-xs text-muted whitespace-nowrap shrink-0">
+                    {Number(album.playcount || 0).toLocaleString()}
+                  </span>
+                </div>
+              );
+            }}
+          />
+          <LastFmSection
+            title="Top Artists"
+            hidden={tab !== "artists"}
+            items={displayTopArtists}
+            renderItem={(artist: any, i: number) => {
+              const image = getImage(artist.image);
+
+              return (
+                <div
+                  key={i}
+                  className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    {image ? (
+                      <img
+                        src={image}
+                        className="w-10 h-10 rounded-full object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-border/40 shrink-0" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm truncate">{artist.name}</p>
                     </div>
-
-                    <span className="text-xs text-muted whitespace-nowrap shrink-0">
-                      {Number(artist.playcount || 0).toLocaleString()}
-                    </span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+
+                  <span className="text-xs text-muted whitespace-nowrap shrink-0">
+                    {Number(artist.playcount || 0).toLocaleString()}
+                  </span>
+                </div>
+              );
+            }}
+          />
         </div>
       )}
     </section>
