@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { JetBrains_Mono } from "next/font/google";
+import { Nav } from "@/components/Nav";
+import { Footer } from "@/components/Footer";
 
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+});
 export const metadata: Metadata = {
   title: {
     default: "Xavier Zoom Boulanger",
@@ -44,8 +50,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className={jetBrainsMono.className}>
+      <body>
+        <main className="mx-auto max-w-5xl px-6 bg-background text-foreground min-h-screen">
+          <Nav />
+          {children}
+          <Footer />
+        </main>
+      </body>
     </html>
   );
 }

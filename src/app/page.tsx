@@ -8,14 +8,12 @@ import { ChessCom } from "@/components/ChessCom";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-5xl px-6 bg-background text-foreground min-h-screen">
-      <Nav />
+    <div>
       <Hero />
       <Github />
       <LastFm />
       <Releases />
       <ChessCom />
-      <Footer />
-    </main>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChessGame } from "./ChessGame";
+import { ChessGame } from "../../../components/chess/ChessGame";
 import { ArrowLeft } from "lucide-react";
 import {
   findGameById,
@@ -60,7 +60,7 @@ export default async function GamePage({ params }: Props) {
   };
 
   return (
-    <main className="min-h-screen py-8 sm:py-12 px-5 lg:px-12 max-w-5xl mx-auto overflow-x-hidden">
+    <div>
       <Link
         href="/chess"
         className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-muted hover:text-foreground transition-colors mb-10"
@@ -70,6 +70,6 @@ export default async function GamePage({ params }: Props) {
       </Link>
 
       <ChessGame pgn={game.pgn ?? ""} meta={meta} />
-    </main>
+    </div>
   );
 }

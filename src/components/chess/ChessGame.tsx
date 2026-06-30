@@ -355,7 +355,6 @@ export function ChessGame({ pgn, meta }: Props) {
             </span>
           </div>
 
-          {/* Chess.com link */}
           {meta.url && (
             <a
               href={meta.url}
@@ -368,7 +367,6 @@ export function ChessGame({ pgn, meta }: Props) {
             </a>
           )}
 
-          {/* PGN */}
           <details className="mt-4 group">
             <summary className="text-[10px] uppercase tracking-[0.2em] text-muted hover:text-foreground transition cursor-pointer list-none flex items-center gap-1.5">
               <ChevronRight className="w-3 h-3 group-open:rotate-90 transition-transform" />

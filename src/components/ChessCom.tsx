@@ -33,7 +33,7 @@ export function ChessCom() {
     <section className="py-12">
       <div className="flex items-end justify-between mb-8">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-muted">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted mb-6">
             Chess
           </p>
           <p className="mt-1.5 text-xs text-muted">Bullet · Blitz · Rapid</p>
@@ -74,11 +74,7 @@ export function ChessCom() {
             <p className="text-sm text-muted py-3">No games this month</p>
           ) : (
             recentGames.map((game: any) => (
-              <ChessGameRow
-                key={game.url}
-                game={game}
-                username={username}
-              />
+              <ChessGameRow key={game.url} game={game} username={username} />
             ))
           )}
         </div>
@@ -100,11 +96,7 @@ export function ChessCom() {
             This month
           </p>
 
-          {loading ? (
-            <SkeletonRow />
-          ) : (
-            <ChessRecords records={records} />
-          )}
+          {loading ? <SkeletonRow /> : <ChessRecords records={records} />}
         </div>
       </div>
     </section>

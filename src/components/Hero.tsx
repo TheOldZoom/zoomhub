@@ -4,7 +4,9 @@ export function Hero() {
   return (
     <section className="pt-24 pb-16">
       <div className="max-w-md">
-        <p className="text-xs tracking-[0.3em] uppercase text-muted">About</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-muted mb-6">
+          About
+        </p>
 
         <p className="mt-6 text-sm text-muted leading-relaxed">
           I am Xavier Zoom Boulanger, a 16-years-old French Canadian and a

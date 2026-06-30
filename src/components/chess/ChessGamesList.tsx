@@ -111,7 +111,7 @@ export function ChessGamesList({ games, username, loading }: Props) {
       )}
 
       {filtered.length > PER_PAGE && (
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
+        <div className="flex items-center justify-between mt-4 pt-4">
           <button
             type="button"
             disabled={currentPage <= 1}

@@ -1,6 +1,6 @@
 export default function ChessLoading() {
   return (
-    <main className="min-h-screen py-8 sm:py-12 px-5 lg:px-12 max-w-5xl mx-auto">
+    <div>
       <div className="h-3 w-16 bg-border/30 animate-pulse mb-10" />
       <div className="space-y-2 mb-10">
         <div className="h-2 w-12 bg-border/30 animate-pulse" />
@@ -22,6 +22,6 @@ export default function ChessLoading() {
           <div key={i} className="h-12 bg-border/20 animate-pulse" />
         ))}
       </div>
-    </main>
+    </div>
   );
 }

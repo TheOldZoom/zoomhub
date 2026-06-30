@@ -111,7 +111,8 @@ export function LastFm() {
       </div>
 
       {loading ? (
-        <div className="grid gap-10 lg:grid-cols-4">
+        <div className="grid gap-10 lg:grid-cols-4 min-w-0">
+          {" "}
           {(["recent", "tracks", "albums", "artists"] as const).map(
             (section) => (
               <div
@@ -129,12 +130,14 @@ export function LastFm() {
           )}
         </div>
       ) : (
-        <div className="grid gap-10 lg:grid-cols-4">
-          <div className={`${tab !== "recent" ? "hidden lg:block" : ""}`}>
+        <div className="grid gap-10 lg:grid-cols-4 min-w-0">
+          <div
+            className={`${tab !== "recent" ? "hidden lg:block" : ""} min-w-0`}
+          >
+            {" "}
             <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
               Recent
             </p>
-
             <div className="space-y-2">
               {visibleTracks.map((track: any, i: number) => {
                 const image = getImage(track.image);
@@ -154,7 +157,7 @@ export function LastFm() {
                         <div className="w-10 h-10 bg-border/40 shrink-0" />
                       )}
 
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm truncate">{track.name}</p>
                         <p className="text-xs text-muted truncate">
                           {track.artist?.["#text"]}
@@ -162,7 +165,8 @@ export function LastFm() {
                       </div>
                     </div>
 
-                    <span className="text-xs text-muted whitespace-nowrap">
+                    <span className="text-xs text-muted whitespace-nowrap shrink-0">
+                      {" "}
                       {track["@attr"]?.nowplaying
                         ? "Now"
                         : track.date?.uts
@@ -176,12 +180,12 @@ export function LastFm() {
               <div ref={loadMoreRef} className="h-10" />
             </div>
           </div>
-
-          <div className={`${tab !== "tracks" ? "hidden lg:block" : ""}`}>
+          <div
+            className={`${tab !== "tracks" ? "hidden lg:block" : ""} min-w-0`}
+          >
             <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
               Top Tracks
             </p>
-
             <div className="space-y-2">
               {topTracks.map((track: any, i: number) => {
                 const image = getImage(track.image);
@@ -201,7 +205,7 @@ export function LastFm() {
                         <div className="w-10 h-10 bg-border/40 shrink-0" />
                       )}
 
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm truncate">{track.name}</p>
                         <p className="text-xs text-muted truncate">
                           {track.artist?.name || track.artist?.["#text"]}
@@ -209,7 +213,8 @@ export function LastFm() {
                       </div>
                     </div>
 
-                    <span className="text-xs text-muted whitespace-nowrap">
+                    <span className="text-xs text-muted whitespace-nowrap shrink-0">
+                      {" "}
                       {Number(track.playcount || 0).toLocaleString()}
                     </span>
                   </div>
@@ -217,13 +222,12 @@ export function LastFm() {
               })}
             </div>
           </div>
-
-          {/* ALBUMS */}
-          <div className={`${tab !== "albums" ? "hidden lg:block" : ""}`}>
+          <div
+            className={`${tab !== "albums" ? "hidden lg:block" : ""} min-w-0`}
+          >
             <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
               Top Albums
             </p>
-
             <div className="space-y-2">
               {topAlbums.map((album: any, i: number) => {
                 const image = getImage(album.image);
@@ -243,7 +247,7 @@ export function LastFm() {
                         <div className="w-10 h-10 bg-border/40 shrink-0" />
                       )}
 
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm truncate">{album.name}</p>
                         <p className="text-xs text-muted truncate">
                           {album.artist?.name || album.artist?.["#text"]}
@@ -251,7 +255,8 @@ export function LastFm() {
                       </div>
                     </div>
 
-                    <span className="text-xs text-muted whitespace-nowrap">
+                    <span className="text-xs text-muted whitespace-nowrap shrink-0">
+                      {" "}
                       {Number(album.playcount || 0).toLocaleString()}
                     </span>
                   </div>
@@ -259,12 +264,12 @@ export function LastFm() {
               })}
             </div>
           </div>
-
-          <div className={`${tab !== "artists" ? "hidden lg:block" : ""}`}>
+          <div
+            className={`${tab !== "artists" ? "hidden lg:block" : ""} min-w-0`}
+          >
             <p className="text-xs uppercase tracking-[0.2em] text-muted mb-4">
               Top Artists
             </p>
-
             <div className="space-y-2">
               {topArtists.map((artist: any, i: number) => {
                 const image = getImage(artist.image);
@@ -283,11 +288,12 @@ export function LastFm() {
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-border/40 shrink-0" />
                       )}
-
-                      <p className="text-sm truncate">{artist.name}</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm truncate">{artist.name}</p>
+                      </div>
                     </div>
 
-                    <span className="text-xs text-muted whitespace-nowrap">
+                    <span className="text-xs text-muted whitespace-nowrap shrink-0">
                       {Number(artist.playcount || 0).toLocaleString()}
                     </span>
                   </div>

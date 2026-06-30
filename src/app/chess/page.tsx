@@ -7,9 +7,9 @@ export default async function ChessPage() {
   const user = process.env.CHESSCOM_USER;
   if (!user) {
     return (
-      <main className="min-h-screen py-8 sm:py-12 px-5 lg:px-12 max-w-5xl mx-auto">
+      <div className="min-h-screen py-8 sm:py-12 px-5 lg:px-12 max-w-5xl mx-auto">
         <p className="text-sm text-muted">Chess.com user not configured.</p>
-      </main>
+      </div>
     );
   }
 
@@ -17,7 +17,7 @@ export default async function ChessPage() {
   const stats = await fetchStats(user);
 
   return (
-    <main className="min-h-screen py-8 sm:py-12 px-5 lg:px-12 max-w-5xl mx-auto overflow-x-hidden">
+    <div>
       <Link
         href="/"
         className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-muted hover:text-foreground transition-colors mb-10"
@@ -27,6 +27,6 @@ export default async function ChessPage() {
       </Link>
 
       <ChessPageContent stats={stats} username={username} />
-    </main>
+    </div>
   );
 }
