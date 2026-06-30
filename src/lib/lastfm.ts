@@ -1,4 +1,4 @@
-import { readCache, writeCache } from "@/lib/supabase";
+import { prisma } from "@/lib/prisma";
 
 const LASTFM_PLACEHOLDER = "2a96cbd8b46e442fc41c2b86b821562f";
 const BASE_URL = "https://ws.audioscrobbler.com/2.0/";
@@ -6,30 +6,84 @@ const BASE_URL = "https://ws.audioscrobbler.com/2.0/";
 const MISS_TTL = 1000 * 60 * 60 * 24;
 const TOP_TTL = 1000 * 60 * 10;
 
+type CacheValue = string | { miss?: true };
+
+function isMissValue(value: unknown): value is { miss?: true } {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    "miss" in value
+  );
+}
+
 async function getTopCache(key: string) {
-  return await readCache(key);
+  const entry = await prisma.lastfmCache.findUnique({
+    where: { key },
+  });
+
+  if (!entry || entry.expiresAt <= new Date()) {
+    return null;
+  }
+
+  return entry.value as CacheValue;
 }
 
 async function setTopCache(key: string, data: any, ttl = TOP_TTL) {
-  await writeCache(key, data, ttl);
+  const expiresAt = new Date(Date.now() + ttl);
+  await prisma.lastfmCache.upsert({
+    where: { key },
+    create: { key, value: data, expiresAt },
+    update: { value: data, expiresAt },
+  });
 }
 
 async function getCache(key: string) {
-  const entry = await readCache(key);
-  return entry?.miss === true ? null : entry;
+  const entry = await prisma.lastfmCache.findUnique({
+    where: { key },
+  });
+
+  if (!entry || entry.expiresAt <= new Date()) {
+    return null;
+  }
+
+  const value = entry.value as CacheValue | null;
+  if (isMissValue(value) && value.miss === true) {
+    return null;
+  }
+
+  return value;
 }
 
 async function setCache(key: string, value: string) {
-  await writeCache(key, value, MISS_TTL);
+  const expiresAt = new Date(Date.now() + MISS_TTL);
+  await prisma.lastfmCache.upsert({
+    where: { key },
+    create: { key, value, expiresAt },
+    update: { value, expiresAt },
+  });
 }
 
 async function isMissCached(key: string) {
-  const entry = await readCache(key);
-  return entry?.miss === true;
+  const entry = await prisma.lastfmCache.findUnique({
+    where: { key },
+  });
+
+  if (!entry || entry.expiresAt <= new Date()) {
+    return false;
+  }
+
+  const value = entry.value as CacheValue | null;
+  return isMissValue(value) && value.miss === true;
 }
 
 async function setMiss(key: string) {
-  await writeCache(key, { miss: true }, MISS_TTL);
+  const expiresAt = new Date(Date.now() + MISS_TTL);
+  await prisma.lastfmCache.upsert({
+    where: { key },
+    create: { key, value: { miss: true }, expiresAt },
+    update: { value: { miss: true }, expiresAt },
+  });
 }
 
 function getApiConfig() {

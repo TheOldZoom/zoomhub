@@ -7,12 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "prisma": "prisma"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.110.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "chess.js": "^1.4.0",
     "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
     "framer-motion": "^12.42.0",
     "lucide-react": "^1.22.0",
     "next": "^16.2.9",
@@ -22,6 +25,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "prisma": "^7.8.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

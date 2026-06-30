@@ -52,6 +52,7 @@ export async function GET(req: Request) {
 
     return Response.json(payload);
   } catch (error) {
+    console.error("Error fetching Last.fm data:", error);
     return Response.json(
       { error: "Server error fetching Last.fm data" },
       { status: 500 },

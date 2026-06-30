@@ -1,13 +1,4 @@
-Required Supabase table:
-create table if not exists public.lastfm_cache (
-key text primary key,
-value jsonb not null,
-expires_at timestamptz not null
-);
+Prisma schema and PostgreSQL migration:
 
-SQL table definition for Supabase:
-create table if not exists lastfm_cache (
-key text primary key,
-value jsonb not null,
-expires_at timestamptz not null
-);
+1. Set `DATABASE_URL` in your environment.
+2. Run `bun prisma db push` to create the `lastfm_cache` table.
