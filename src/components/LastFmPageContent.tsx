@@ -142,11 +142,19 @@ export function LastFmPageContent() {
   const [tab, setTab] = useState<"recent" | "artists" | "tracks" | "albums">(
     "recent",
   );
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
+
+    const onScroll = () => {
+      setShowScrollButton(window.scrollY > 200);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
 
     fetch(`/api/lastfm?period=${period}`, { cache: "no-store" })
       .then(async (res) => {
@@ -171,6 +179,7 @@ export function LastFmPageContent() {
 
     return () => {
       cancelled = true;
+      window.removeEventListener("scroll", onScroll);
     };
   }, [period]);
 
@@ -481,6 +490,21 @@ export function LastFmPageContent() {
           </div>
         </>
       )}
+
+      {showScrollButton ? (
+        <div className="fixed inset-x-0 bottom-4 z-50">
+          <div className="mx-auto flex max-w-5xl justify-end px-6">
+            <button
+              type="button"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="text-xs uppercase tracking-[0.15em] px-3 py-1 border transition-colors border-border/60 text-muted hover:bg-foreground hover:text-background hover:border-foreground"
+              aria-label="Scroll to top"
+            >
+              Top
+            </button>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
