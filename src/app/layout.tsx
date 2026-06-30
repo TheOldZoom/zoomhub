@@ -3,6 +3,7 @@ import "./globals.css";
 import { JetBrains_Mono } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
+import SessionProviderClient from "@/components/SessionProviderClient";
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -53,9 +54,11 @@ export default function RootLayout({
     <html lang="en" className={jetBrainsMono.className}>
       <body>
         <main className="mx-auto max-w-5xl px-6 bg-background text-foreground min-h-screen">
-          <Nav />
-          {children}
-          <Footer />
+          <SessionProviderClient>
+            <Nav />
+            {children}
+            <Footer />
+          </SessionProviderClient>
         </main>
       </body>
     </html>

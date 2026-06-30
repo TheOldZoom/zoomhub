@@ -1,8 +1,6 @@
-import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { Releases } from "@/components/Releases";
 import { Github } from "@/components/Github";
-import { Footer } from "@/components/Footer";
 import { LastFm } from "@/components/LastFm";
 import { ChessCom } from "@/components/ChessCom";
 
