@@ -196,11 +196,6 @@ async function fetchLastFmPaged(
 }
 
 export async function fetchLastFmRecent(limit = 20) {
-  const { user } = getApiConfig();
-  const cacheKey = `recent:${user}:${limit}`;
-  const cached = await getTopCache(cacheKey);
-  if (cached) return cached;
-
   if (limit === 0) {
     const recent = await fetchLastFmPaged(
       "user.getrecenttracks",
@@ -209,9 +204,7 @@ export async function fetchLastFmRecent(limit = 20) {
       "track",
       200,
     );
-    const enriched = await Promise.all(recent.map(enrichTrack));
-    await setTopCache(cacheKey, enriched);
-    return enriched;
+    return await Promise.all(recent.map(enrichTrack));
   }
 
   const url = buildUrl("user.getrecenttracks", {
@@ -219,9 +212,7 @@ export async function fetchLastFmRecent(limit = 20) {
   });
   const body = await fetchJson(url);
   const recent = body.recenttracks?.track ?? [];
-  const enriched = await Promise.all(recent.map(enrichTrack));
-  await setTopCache(cacheKey, enriched);
-  return enriched;
+  return await Promise.all(recent.map(enrichTrack));
 }
 
 export async function fetchLastFmTopArtists(period = "7day", limit = 20) {

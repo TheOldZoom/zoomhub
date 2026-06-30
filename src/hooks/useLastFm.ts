@@ -16,7 +16,7 @@ export function useLastFm() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/lastfm")
+    fetch("/api/lastfm", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         setData(data);

@@ -6,6 +6,8 @@ import {
   fetchLastFmUser,
 } from "@/lib/lastfm";
 
+export const dynamic = "force-dynamic";
+
 const PERIODS = new Set([
   "7day",
   "1month",
@@ -14,9 +16,6 @@ const PERIODS = new Set([
   "12month",
   "overall",
 ]);
-
-const payloadCache = new Map<string, { exp: number; data: any }>();
-const PAYLOAD_TTL = 1000 * 60 * 5;
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -30,12 +29,6 @@ export async function GET(req: Request) {
       },
       { status: 400 },
     );
-  }
-
-  const cacheKey = `lastfm:payload:${period}`;
-  const cached = payloadCache.get(cacheKey);
-  if (cached && Date.now() < cached.exp) {
-    return Response.json(cached.data);
   }
 
   try {
@@ -56,11 +49,6 @@ export async function GET(req: Request) {
       topAlbums,
       topTracks,
     };
-
-    payloadCache.set(cacheKey, {
-      exp: Date.now() + PAYLOAD_TTL,
-      data: payload,
-    });
 
     return Response.json(payload);
   } catch (error) {
