@@ -4,6 +4,7 @@ const LASTFM_PLACEHOLDER = "2a96cbd8b46e442fc41c2b86b821562f";
 const BASE_URL = "https://ws.audioscrobbler.com/2.0/";
 
 const MISS_TTL = 1000 * 60 * 60 * 24;
+const HIT_TTL = 1000 * 60 * 60 * 24 * 14;
 const TOP_TTL = 1000 * 60 * 10;
 
 type CacheValue = string | { miss?: true };
@@ -56,7 +57,7 @@ async function getCache(key: string) {
 }
 
 async function setCache(key: string, value: string) {
-  const expiresAt = new Date(Date.now() + MISS_TTL);
+  const expiresAt = new Date(Date.now() + HIT_TTL);
   await prisma.lastfmCache.upsert({
     where: { key },
     create: { key, value, expiresAt },
