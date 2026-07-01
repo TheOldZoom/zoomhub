@@ -9,7 +9,16 @@ const STATS_TTL = 1000 * 60 * 10;
 const GAMES_TTL = 1000 * 60 * 5;
 
 const BASE = "https://api.chess.com/pub";
-const HEADERS = { "User-Agent": "portfolio-site/1.0 (your@email.com)" };
+const HEADERS = {
+  "User-Agent":
+    "zoomhub.xyz/1.2 (username: theoldzoom; contact: theoldzoom@proton.me)",
+};
+
+function buildGamesUrl(user: string, date: Date) {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  return `${BASE}/player/${user}/games/${year}/${month}`;
+}
 
 function getCache<T>(
   map: Map<string, { exp: number; data: T }>,
@@ -58,13 +67,27 @@ export async function GET() {
     let games = getCache(gamesCache, user);
     if (!games) {
       const now = new Date();
-      const year = now.getUTCFullYear();
-      const month = String(now.getUTCMonth() + 1).padStart(2, "0");
-      const res = await fetch(`${BASE}/player/${user}/games/${year}/${month}`, {
+      let res = await fetch(buildGamesUrl(user, now), {
         headers: HEADERS,
         cache: "no-store",
       });
-      const body = await res.json();
+      let body = await res.json();
+
+      if (
+        !res.ok &&
+        res.status === 404 &&
+        body?.message === "Date cannot be set in the future"
+      ) {
+        const fallbackDate = new Date(
+          Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1),
+        );
+        res = await fetch(buildGamesUrl(user, fallbackDate), {
+          headers: HEADERS,
+          cache: "no-store",
+        });
+        body = await res.json();
+      }
+
       games = body.games ?? [];
       setCache(gamesCache, user, games, GAMES_TTL);
     }
