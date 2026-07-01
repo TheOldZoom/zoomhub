@@ -12,7 +12,6 @@ export default function JournalsLoading() {
           <div className="h-8 w-24 bg-border/30 animate-pulse" />
         </div>
 
-        {/* JournalTagFilter */}
         <div className="flex flex-wrap gap-2 mb-6">
           {Array.from({ length: 5 }).map((_, index) => (
             <div
@@ -22,15 +21,12 @@ export default function JournalsLoading() {
           ))}
         </div>
 
-        {/* JournalSearch */}
         <div className="mb-6">
           <div className="h-9 w-full border border-border/40 animate-pulse" />
         </div>
 
-        {/* entry count line */}
         <div className="h-3 w-20 bg-border/20 animate-pulse mb-3" />
 
-        {/* JournalBox grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <div key={index} className="border border-border/40 p-6 space-y-4">

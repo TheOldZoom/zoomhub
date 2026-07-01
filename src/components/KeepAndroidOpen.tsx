@@ -83,9 +83,7 @@ export function KeepAndroidOpenBanner() {
         }
         localStorage.removeItem(STORAGE_KEY);
       }
-    } catch {
-      // localStorage unavailable, ignore
-    }
+    } catch {}
     setLocale(
       resolveLocale(document.documentElement.lang || navigator.language),
     );
@@ -148,9 +146,7 @@ export function KeepAndroidOpenBanner() {
     setDismissed(true);
     try {
       localStorage.setItem(STORAGE_KEY, String(Date.now()));
-    } catch {
-      // localStorage unavailable, ignore
-    }
+    } catch {}
   }
 
   if (!mounted || dismissed) return null;

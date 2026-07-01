@@ -1,14 +1,11 @@
 "use client";
-
 import { useState } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
-
 interface JournalStarProps {
   slug: string;
   initialCount: number;
   initialAlreadyStarred: boolean;
 }
-
 export function JournalStar({
   slug,
   initialCount,
@@ -21,21 +18,33 @@ export function JournalStar({
   async function handleStar() {
     if (loading || starred) return;
     setLoading(true);
-
     try {
       const res = await fetch(`/api/journal/${slug}`, { method: "POST" });
       const data = await res.json();
-
       if (res.status === 409) {
         setCount(data.count);
         setStarred(true);
         return;
       }
-
       if (!res.ok) return;
-
       setCount(data.count);
       setStarred(true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleUnstar() {
+    if (loading || !starred) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/journal/${slug}/reaction`, {
+        method: "DELETE",
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setCount(data.count);
+      setStarred(false);
     } finally {
       setLoading(false);
     }
@@ -44,8 +53,8 @@ export function JournalStar({
   return (
     <button
       type="button"
-      onClick={handleStar}
-      disabled={loading || starred}
+      onClick={starred ? handleUnstar : handleStar}
+      disabled={loading}
       className={`flex items-center gap-1.5 border px-3 py-1.5 text-xs transition ${
         starred
           ? "border-foreground text-foreground"

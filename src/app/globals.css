@@ -24,7 +24,6 @@
   }
 }
 
-/* Journal markdown content */
 .journal-markdown {
   color: var(--muted);
 }
@@ -119,7 +118,6 @@
   color: var(--border);
 }
 
-/* GFM task lists render as <li> with a leading checkbox input */
 .journal-markdown li:has(> input[type="checkbox"]) {
   list-style: none;
   margin-left: -1.25rem;
