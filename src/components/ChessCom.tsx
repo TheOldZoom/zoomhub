@@ -36,7 +36,6 @@ export function ChessCom() {
           <p className="text-xs uppercase tracking-[0.3em] text-muted mb-6">
             Chess
           </p>
-          <p className="mt-1.5 text-xs text-muted">Bullet · Blitz · Rapid</p>
         </div>
         <Link
           href="/chess"
@@ -65,13 +64,13 @@ export function ChessCom() {
       <div className="grid gap-10 lg:grid-cols-3">
         <div className={tab !== "recent" ? "hidden lg:block" : ""}>
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">
-            Recent games
+            Recent
           </p>
 
           {loading ? (
             Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
           ) : recentGames.length === 0 ? (
-            <p className="text-sm text-muted py-3">No games this month</p>
+            <p className="text-sm text-muted py-3">No games</p>
           ) : (
             recentGames.map((game: any) => (
               <ChessGameRow key={game.url} game={game} username={username} />
@@ -93,10 +92,14 @@ export function ChessCom() {
 
         <div className={tab !== "record" ? "hidden lg:block" : ""}>
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-4">
-            This month
+            month
           </p>
 
-          {loading ? <SkeletonRow /> : <ChessRecords records={records} />}
+          {loading ? (
+            Array.from({ length: 3 }).map((_, i) => <SkeletonRow key={i} />)
+          ) : (
+            <ChessRecords records={records} />
+          )}
         </div>
       </div>
     </section>

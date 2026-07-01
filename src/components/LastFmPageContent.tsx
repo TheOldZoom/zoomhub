@@ -114,7 +114,7 @@ function SectionSkeleton({ label }: { label: string }) {
         {label}
       </p>
       <div className="space-y-2 min-w-0">
-        {Array.from({ length: 6 }).map((_, index) => (
+        {Array.from({ length: 50 }).map((_, index) => (
           <div
             key={index}
             className="flex items-center justify-between gap-3 py-3 border-b border-border/40"
