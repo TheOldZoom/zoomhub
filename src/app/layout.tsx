@@ -18,9 +18,11 @@ export const metadata: Metadata = {
   },
   description: "Developer, Photographer, and a random guy that enjoys life.",
   metadataBase: new URL("https://zoomhub.xyz"),
-  icons: {
-    icon: "/favicon.ico",
-  },
+  manifest: "/manifest",
+  icons: [
+    { rel: "icon", url: "/icon.svg" },
+    { rel: "apple-touch-icon", url: "/icon.svg" },
+  ],
   openGraph: {
     title: "Xavier Zoom Boulanger",
     description: "Developer, Photographer, and a random guy that enjoys life.",
