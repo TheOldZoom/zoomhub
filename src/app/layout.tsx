@@ -9,6 +9,7 @@ import Analytics from "@/components/Analytics";
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
+
 export const metadata: Metadata = {
   title: {
     default: "Xavier Zoom Boulanger",
@@ -16,11 +17,9 @@ export const metadata: Metadata = {
   },
   description: "Developer, Photographer, and a random guy that enjoys life.",
   metadataBase: new URL("https://zoomhub.xyz"),
-
   icons: {
     icon: "/favicon.ico",
   },
-
   openGraph: {
     title: "Xavier Zoom Boulanger",
     description: "Developer, Photographer, and a random guy that enjoys life.",
@@ -37,7 +36,6 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
-
   twitter: {
     card: "summary_large_image",
     title: "Xavier Zoom Boulanger",
@@ -54,10 +52,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={jetBrainsMono.className}>
       <body>
-        <main className="mx-auto max-w-5xl px-6 bg-background text-foreground min-h-screen">
+        <main className="mx-auto max-w-5xl px-6 bg-background text-foreground min-h-screen flex flex-col">
           <SessionProviderClient>
             <Nav />
-            {children}
+            <div className="flex-1">{children}</div>
             <Footer />
           </SessionProviderClient>
         </main>

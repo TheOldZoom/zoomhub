@@ -66,7 +66,7 @@ export function ChessGamesList({ games, username, loading }: Props) {
             type="search"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Search opponent"
+            placeholder="Search"
             className="w-full pl-8 pr-3 py-2 text-sm bg-transparent border border-border/40 focus:border-border outline-none"
           />
         </div>

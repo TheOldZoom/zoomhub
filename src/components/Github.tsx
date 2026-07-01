@@ -1,6 +1,7 @@
 "use client";
 
 import { useRepos } from "@/hooks/useRepos";
+import Link from "next/link";
 import { FaStar } from "react-icons/fa";
 
 export function Github() {
@@ -8,9 +9,19 @@ export function Github() {
 
   return (
     <section className="py-12">
-      <p className="text-xs uppercase tracking-[0.3em] text-muted mb-6">
-        GitHub
-      </p>
+      <div className="flex items-end justify-between mb-8 gap-4">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted mb-6">
+          Github
+        </p>
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://github.com/theoldzoom"
+          className="text-[10px] uppercase tracking-[0.15em] text-muted hover:text-foreground transition"
+        >
+          View GitHub
+        </Link>
+      </div>
 
       {loading && <p className="text-sm text-muted">Loading repositories...</p>}
 

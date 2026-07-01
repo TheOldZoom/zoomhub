@@ -1,5 +1,4 @@
 "use client";
-
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function SignInButton() {
@@ -10,7 +9,7 @@ export default function SignInButton() {
       <button
         type="button"
         onClick={() => signOut()}
-        className="ml-4 rounded-2xl border border-border/40 bg-background/5 px-4 py-2 text-sm font-medium text-muted hover:bg-foreground hover:text-background"
+        className="w-full border border-border/40 px-4 py-2 text-xs uppercase tracking-[0.15em] text-muted hover:border-foreground hover:text-foreground transition"
       >
         Sign out
       </button>
@@ -21,9 +20,9 @@ export default function SignInButton() {
     <button
       type="button"
       onClick={() => signIn("discord")}
-      className="ml-4 rounded-2xl bg-violet-500 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-400"
+      className="w-full border border-border/40 px-4 py-2 text-xs uppercase tracking-[0.15em] text-muted hover:border-foreground hover:text-foreground transition"
     >
-      Sign in
+      Sign in with Discord
     </button>
   );
 }

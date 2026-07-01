@@ -1,11 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 import { FaLastfm } from "react-icons/fa";
 import { FaXTwitter, FaInstagram, FaGithub, FaSpotify } from "react-icons/fa6";
 
+export const spotifyAccounts = [
+  {
+    name: "Artist",
+    url: "https://open.spotify.com/artist/4ztedRQMcTeNSIpu5A5STy",
+  },
+  {
+    name: "Personal",
+    url: "https://open.spotify.com/user/31f35f5kcsdxh3uvp65xqwno3i5u",
+  },
+];
+
 export function Footer() {
   const [open, setOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   const socials = [
     {
@@ -30,38 +44,49 @@ export function Footer() {
     },
   ];
 
-  const spotifyAccounts = [
-    {
-      name: "Artist",
-      url: "https://open.spotify.com/artist/4ztedRQMcTeNSIpu5A5STy",
-    },
-    {
-      name: "Personal",
-      url: "https://open.spotify.com/user/31f35f5kcsdxh3uvp65xqwno3i5u",
-    },
-  ];
-
   return (
-    <footer className="py-16 mt-12 border-t border-border/40">
-      <div className="flex flex-col gap-10 md:flex-row md:justify-between md:items-start">
+    <footer className="mt-12 border-t border-border/40 py-16">
+      <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="text-sm tracking-[0.3em] uppercase">
+          <p className="text-sm uppercase tracking-[0.3em]">
             Xavier Zoom Boulanger
           </p>
 
           <a
             href="mailto:theoldzoom@proton.me"
-            className="text-xs text-muted mt-2 block hover:text-foreground transition"
+            className="mt-2 block text-xs text-muted transition hover:text-foreground"
           >
             theoldzoom@proton.me
           </a>
 
-          <p className="text-xs text-muted mt-2">
-            A Random Guy That Enjoys Life
-          </p>
+          <div className="mt-2 flex items-center gap-2">
+            <p className="text-xs text-muted">A Random Guy That Enjoys Life</p>
+
+            {status !== "loading" && (
+              <>
+                <span className="text-xs text-muted">·</span>
+
+                {session ? (
+                  <button
+                    onClick={() => signOut()}
+                    className="cursor-pointer text-xs text-muted transition hover:text-foreground"
+                  >
+                    Sign out
+                  </button>
+                ) : (
+                  <Link
+                    href="/auth/signin"
+                    className="text-xs text-muted transition hover:text-foreground"
+                  >
+                    Sign in
+                  </Link>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
-        <div className="flex gap-6 items-center text-muted">
+        <div className="flex items-center gap-6 text-muted">
           {socials.map((social) => {
             const Icon = social.icon;
 
@@ -71,30 +96,30 @@ export function Footer() {
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-foreground transition-colors duration-200"
+                className="transition-colors duration-200 hover:text-foreground"
               >
-                <Icon className="w-6 h-6" />
+                <Icon className="h-6 w-6" />
               </a>
             );
           })}
 
           <div className="relative">
             <button
-              onClick={() => setOpen(!open)}
-              className="flex items-center justify-center hover:text-foreground transition-colors duration-200 cursor-pointer"
+              onClick={() => setOpen((prev) => !prev)}
+              className="flex cursor-pointer items-center justify-center transition-colors duration-200 hover:text-foreground"
             >
-              <FaSpotify className="w-6 h-6" />
+              <FaSpotify className="h-6 w-6" />
             </button>
 
             {open && (
-              <div className="absolute mt-2 left-1/2 -translate-x-1/2 flex flex-col gap-2 border border-border/40 bg-background p-3 min-w-35">
+              <div className="absolute left-1/2 mt-2 flex min-w-35 -translate-x-1/2 flex-col gap-2 border border-border/40 bg-background p-3">
                 {spotifyAccounts.map((acc) => (
                   <a
                     key={acc.name}
                     href={acc.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-muted hover:text-foreground transition"
+                    className="text-xs text-muted transition hover:text-foreground"
                   >
                     {acc.name}
                   </a>
