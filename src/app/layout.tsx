@@ -4,6 +4,7 @@ import { JetBrains_Mono } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import SessionProviderClient from "@/components/SessionProviderClient";
+import Analytics from "@/components/Analytics";
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -60,6 +61,7 @@ export default function RootLayout({
             <Footer />
           </SessionProviderClient>
         </main>
+        <Analytics />
       </body>
     </html>
   );
