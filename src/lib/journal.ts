@@ -75,6 +75,11 @@ export async function getJournalsForFeed() {
       content: true,
       publishedAt: true,
       updatedAt: true,
+      tags: {
+        select: {
+          name: true,
+        },
+      },
     },
     orderBy: { publishedAt: "desc" },
     take: 20,
