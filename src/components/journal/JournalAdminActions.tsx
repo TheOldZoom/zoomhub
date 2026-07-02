@@ -3,6 +3,7 @@ import { useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 interface JournalAdminActionsProps {
   slug: string;
@@ -15,11 +16,15 @@ export function JournalAdminActions({
 }: JournalAdminActionsProps) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  async function handleDelete(e: MouseEvent) {
+  function handleDeleteClick(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (!confirm("Delete this journal entry? This cannot be undone.")) return;
+    setConfirmOpen(true);
+  }
+
+  async function handleConfirmDelete() {
     setBusy(true);
     try {
       const res = await fetch(`/api/journal/${slug}`, { method: "DELETE" });
@@ -31,6 +36,7 @@ export function JournalAdminActions({
       }
     } finally {
       setBusy(false);
+      setConfirmOpen(false);
     }
   }
 
@@ -55,40 +61,53 @@ export function JournalAdminActions({
   }
 
   return (
-    <div
-      className="flex items-center gap-1"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <Link
-        href={`/journal/${slug}/edit`}
+    <>
+      <div
+        className="flex items-center gap-1"
         onClick={(e) => e.stopPropagation()}
-        className="p-1.5 border border-border/40 hover:border-foreground hover:text-foreground transition text-muted"
-        title="Edit"
       >
-        <Pencil className="w-3 h-3" />
-      </Link>
-      <button
-        type="button"
-        onClick={handleTogglePublish}
-        disabled={busy}
-        className="p-1.5 border border-border/40 hover:border-foreground hover:text-foreground transition text-muted disabled:opacity-50"
-        title={published ? "Unpublish" : "Publish"}
-      >
-        {published ? (
-          <EyeOff className="w-3 h-3" />
-        ) : (
-          <Eye className="w-3 h-3" />
-        )}
-      </button>
-      <button
-        type="button"
-        onClick={handleDelete}
-        disabled={busy}
-        className="p-1.5 border border-border/40 hover:border-red-500 hover:text-red-500 transition text-muted disabled:opacity-50"
-        title="Delete"
-      >
-        <Trash2 className="w-3 h-3" />
-      </button>
-    </div>
+        <Link
+          href={`/journal/${slug}/edit`}
+          onClick={(e) => e.stopPropagation()}
+          className="p-1.5 border border-border/40 hover:border-foreground hover:text-foreground transition text-muted"
+          title="Edit"
+        >
+          <Pencil className="w-3 h-3" />
+        </Link>
+        <button
+          type="button"
+          onClick={handleTogglePublish}
+          disabled={busy}
+          className="p-1.5 border border-border/40 hover:border-foreground hover:text-foreground transition text-muted disabled:opacity-50"
+          title={published ? "Unpublish" : "Publish"}
+        >
+          {published ? (
+            <EyeOff className="w-3 h-3" />
+          ) : (
+            <Eye className="w-3 h-3" />
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={handleDeleteClick}
+          disabled={busy}
+          className="p-1.5 border border-border/40 hover:border-foreground hover:text-foreground transition text-muted disabled:opacity-50"
+          title="Delete"
+        >
+          <Trash2 className="w-3 h-3" />
+        </button>
+      </div>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Delete this journal entry?"
+        description="This cannot be undone."
+        confirmLabel="Delete"
+        destructive
+        busy={busy}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
+    </>
   );
 }
