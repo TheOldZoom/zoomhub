@@ -4,7 +4,6 @@ export default function JournalsLoading() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-10">
           <div className="h-3 w-16 bg-border/30 animate-pulse" />
-          <div className="h-8 w-28 border border-border/40 animate-pulse" />
         </div>
 
         <div className="mb-10">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Rss } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { JournalList } from "@/components/journal/JournalList";
@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     "Xavier Zoom Boulanger's journal, where he shares his ideas, things he finds interesting, random thoughts, and vents.",
   alternates: {
     canonical: "/journal",
+    types: {
+      "application/rss+xml": "https://zoomhub.xyz/rss.xml",
+    },
   },
   openGraph: {
     title: "Journal | Xavier Zoom Boulanger",
@@ -33,7 +36,6 @@ export const metadata: Metadata = {
 export default async function JournalsPage() {
   const session = await getServerSession(authOptions);
   const isAdmin = Boolean(session);
-
   const journal = isAdmin
     ? await getAllJournalsForAdmin()
     : await getJournals();
@@ -49,7 +51,6 @@ export default async function JournalsPage() {
             <ArrowLeft className="w-3.5 h-3.5" />
             Back
           </Link>
-
           {isAdmin && (
             <Link
               href="/journal/new"
@@ -61,11 +62,22 @@ export default async function JournalsPage() {
           )}
         </div>
 
-        <div className="mb-10">
-          <p className="text-xs uppercase tracking-[0.3em] text-muted">
-            Journal
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold">Entry</h1>
+        <div className="mb-10 flex items-end justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-muted">
+              Journal
+            </p>
+            <h1 className="mt-2 text-2xl font-semibold">Entry</h1>
+          </div>
+          <a
+            href="/rss.xml"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.25em] text-muted hover:text-foreground transition-colors"
+          >
+            <Rss className="w-3.5 h-3.5" />
+            RSS
+          </a>
         </div>
 
         <JournalList journals={journal} isAdmin={isAdmin} />
