@@ -8,7 +8,7 @@ export function Hero() {
 
 I am self-taught and have been coding for about **${new Date().getFullYear() - 2019} years**. I have experience in **Typescript** & **Golang**.
 
-Outside of coding, I am also trying to become a **photographer** and I enjoy listening to **music**, especially **Kanye West**. My favorite album is **Donda**. You can check out my photos on [Instagram](https://instagram.com/your-handle).
+Outside of coding, I am also trying to become a **photographer** and I enjoy listening to **music**, especially **Kanye West**. My favorite album is **Donda**. You can check out my photos on [Instagram](https://instagram.com/itsxayv).
 
 My family and I moved to **Costa Rica** in **2021**. I've met some **great people** there, and it has become a place I **genuinely appreciate**.
 
