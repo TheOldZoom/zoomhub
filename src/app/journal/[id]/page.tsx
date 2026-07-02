@@ -9,6 +9,55 @@ import { prisma } from "@/lib/prisma";
 import { getClientIpFromHeaders } from "@/lib/ip";
 import { JournalStar } from "@/components/journal/JournalStar";
 import { JournalAdminActions } from "@/components/journal/JournalAdminActions";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const journal = await prisma.journal.findUnique({
+    where: { slug: id },
+    select: {
+      title: true,
+      content: true,
+      publishedAt: true,
+      tags: { select: { name: true } },
+    },
+  });
+
+  if (!journal || journal.publishedAt === null) {
+    return { title: "Journal entry not found" };
+  }
+
+  const description =
+    journal.content
+      .replace(/[#*`>_\-\[\]!]/g, "")
+      .slice(0, 155)
+      .trim() + (journal.content.length > 155 ? "…" : "");
+
+  return {
+    title: journal.title,
+    description,
+    alternates: {
+      canonical: `/journal/${id}`,
+    },
+    keywords: journal.tags.map((t) => t.name),
+    openGraph: {
+      title: journal.title,
+      description,
+      url: `https://zoomhub.xyz/journal/${id}`,
+      type: "article",
+      publishedTime: journal.publishedAt.toISOString(),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: journal.title,
+      description,
+    },
+  };
+}
 
 const markdownComponents = {
   a: ({ href, children, ...props }: React.ComponentPropsWithoutRef<"a">) => (

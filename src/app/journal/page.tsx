@@ -4,8 +4,31 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { JournalList } from "@/components/journal/JournalList";
 import { getJournals, getAllJournalsForAdmin } from "@/lib/journal";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Journal",
+  description:
+    "Thoughts, notes, and updates from Xavier Zoom Boulanger — developer and photographer.",
+  alternates: {
+    canonical: "/journal",
+  },
+  openGraph: {
+    title: "Journal | Xavier Zoom Boulanger",
+    description:
+      "Thoughts, notes, and updates from Xavier Zoom Boulanger — developer and photographer.",
+    url: "https://zoomhub.xyz/journal",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Journal | Xavier Zoom Boulanger",
+    description:
+      "Thoughts, notes, and updates from Xavier Zoom Boulanger — developer and photographer.",
+  },
+};
 
 export default async function JournalsPage() {
   const session = await getServerSession(authOptions);

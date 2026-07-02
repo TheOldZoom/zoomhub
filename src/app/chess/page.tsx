@@ -1,7 +1,32 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
 import { ChessPageContent } from "@/components/chess/ChessPageContent";
 import { fetchStats } from "@/lib/chesscom";
+
+export const metadata: Metadata = {
+  title: "Chess",
+  description:
+    "Chess.com stats and ratings for Xavier Zoom Boulanger — rapid, blitz, and bullet performance.",
+  alternates: {
+    canonical: "/chess",
+  },
+  openGraph: {
+    title: "Chess | Xavier Zoom Boulanger",
+    description:
+      "Chess.com stats and ratings for Xavier Zoom Boulanger — rapid, blitz, and bullet performance.",
+    url: "https://zoomhub.xyz/chess",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Chess | Xavier Zoom Boulanger",
+    description:
+      "Chess.com stats and ratings for Xavier Zoom Boulanger — rapid, blitz, and bullet performance.",
+  },
+};
+
+export const dynamic = "force-dynamic";
 
 export default async function ChessPage() {
   const user = process.env.CHESSCOM_USER;
@@ -25,7 +50,6 @@ export default async function ChessPage() {
         <ArrowLeft className="w-3.5 h-3.5" />
         Back
       </Link>
-
       <ChessPageContent stats={stats} username={username} />
     </div>
   );
