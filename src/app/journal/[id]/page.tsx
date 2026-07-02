@@ -100,13 +100,15 @@ export default async function JournalPage({
     return (
       <section className="py-12">
         <div className="max-w-5xl mx-auto">
-          <Link
-            href="/journal"
-            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-muted hover:text-foreground transition-colors mb-10"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back
-          </Link>
+          <nav data-nosnippet aria-label="Journal navigation">
+            <Link
+              href="/journal"
+              className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-muted hover:text-foreground transition-colors mb-10"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back
+            </Link>
+          </nav>
           <p className="text-sm text-muted">Journal entry not found.</p>
         </div>
       </section>
@@ -124,7 +126,17 @@ export default async function JournalPage({
   return (
     <section className="py-12">
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
+        {/*
+          data-nosnippet + aria-label tell Readability-style extractors
+          (used by RSS readers' "load full content" features, e.g. Feeder)
+          that this nav is chrome, not article content, so it doesn't get
+          scraped alongside the real article body below.
+        */}
+        <nav
+          data-nosnippet
+          aria-label="Journal navigation"
+          className="flex items-center justify-between mb-10"
+        >
           <Link
             href="/journal"
             className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.25em] text-muted hover:text-foreground transition-colors"
@@ -139,56 +151,69 @@ export default async function JournalPage({
               published={journal.publishedAt !== null}
             />
           )}
-        </div>
+        </nav>
 
-        <div className="mb-10 border-b border-border/40 pb-6 flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted">
-              Journal
+        <article itemScope itemType="https://schema.org/BlogPosting">
+          <header className="mb-10 border-b border-border/40 pb-6 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-muted">
+                Journal
+              </p>
+              <h1 itemProp="headline" className="mt-2 text-2xl font-semibold">
+                {journal.title}
+              </h1>
+              {journal.publishedAt && (
+                <meta
+                  itemProp="datePublished"
+                  content={journal.publishedAt.toISOString()}
+                />
+              )}
+            </div>
+            <JournalStar
+              slug={param.id}
+              initialCount={journal.reactions.length}
+              initialAlreadyStarred={Boolean(existingReaction)}
+            />
+          </header>
+
+          <div className="border border-border/40 p-6">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted mb-4">
+              Entry
             </p>
-            <h1 className="mt-2 text-2xl font-semibold">{journal.title}</h1>
-          </div>
-          <JournalStar
-            slug={param.id}
-            initialCount={journal.reactions.length}
-            initialAlreadyStarred={Boolean(existingReaction)}
-          />
-        </div>
-
-        <div className="border border-border/40 p-6">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-muted mb-4">
-            Entry
-          </p>
-          <div className="journal-markdown text-sm leading-relaxed text-muted">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm, remarkBreaks]}
-              components={markdownComponents}
+            <div
+              itemProp="articleBody"
+              className="journal-markdown text-sm leading-relaxed text-muted"
             >
-              {journal.content}
-            </ReactMarkdown>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkBreaks]}
+                components={markdownComponents}
+              >
+                {journal.content}
+              </ReactMarkdown>
+            </div>
+            <footer className="mt-8 pt-4 border-t border-border/40 flex items-center justify-between gap-4">
+              {journal.tags.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {journal.tags.map((tag) => (
+                    <span
+                      key={tag.id}
+                      className="border border-border/40 px-3 py-1 text-xs text-muted"
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span />
+              )}
+              <span className="text-xs text-muted font-mono whitespace-nowrap">
+                {journal.publishedAt
+                  ? journal.publishedAt.toLocaleDateString()
+                  : "Draft"}
+              </span>
+            </footer>
           </div>
-          <div className="mt-8 pt-4 border-t border-border/40 flex items-center justify-between gap-4">
-            {journal.tags.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {journal.tags.map((tag) => (
-                  <span
-                    key={tag.id}
-                    className="border border-border/40 px-3 py-1 text-xs text-muted"
-                  >
-                    {tag.name}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <span />
-            )}
-            <span className="text-xs text-muted font-mono whitespace-nowrap">
-              {journal.publishedAt
-                ? journal.publishedAt.toLocaleDateString()
-                : "Draft"}
-            </span>
-          </div>
-        </div>
+        </article>
       </div>
     </section>
   );
