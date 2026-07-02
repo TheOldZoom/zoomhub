@@ -6,14 +6,14 @@ import { LastFmPageContent } from "@/components/LastFmPageContent";
 export const metadata: Metadata = {
   title: "Last.fm",
   description:
-    "Recent listening activity and top tracks for Xavier Zoom Boulanger, scrobbled via Last.fm.",
+    "Xavier Zoom Boulanger's last.fm stats, including top artists, top albums, and top tracks.",
   alternates: {
     canonical: "/lastfm",
   },
   openGraph: {
     title: "Last.fm | Xavier Zoom Boulanger",
     description:
-      "Recent listening activity and top tracks for Xavier Zoom Boulanger, scrobbled via Last.fm.",
+      "Xavier Zoom Boulanger's last.fm stats, including top artists, top albums, and top tracks.",
     url: "https://zoomhub.xyz/lastfm",
     type: "website",
   },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Last.fm | Xavier Zoom Boulanger",
     description:
-      "Recent listening activity and top tracks for Xavier Zoom Boulanger, scrobbled via Last.fm.",
+      "Xavier Zoom Boulanger's last.fm stats, including top artists, top albums, and top tracks.",
   },
 };
 

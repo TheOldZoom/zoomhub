@@ -7,14 +7,14 @@ import { fetchStats } from "@/lib/chesscom";
 export const metadata: Metadata = {
   title: "Chess",
   description:
-    "Chess.com stats and ratings for Xavier Zoom Boulanger — rapid, blitz, and bullet performance.",
+    "Xavier Zoom Boulanger's chess.com stats, including ratings, and games.",
   alternates: {
     canonical: "/chess",
   },
   openGraph: {
     title: "Chess | Xavier Zoom Boulanger",
     description:
-      "Chess.com stats and ratings for Xavier Zoom Boulanger — rapid, blitz, and bullet performance.",
+      "Xavier Zoom Boulanger's chess.com stats, including ratings, and games.",
     url: "https://zoomhub.xyz/chess",
     type: "website",
   },
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Chess | Xavier Zoom Boulanger",
     description:
-      "Chess.com stats and ratings for Xavier Zoom Boulanger — rapid, blitz, and bullet performance.",
+      "Xavier Zoom Boulanger's chess.com stats, including ratings, and games.",
   },
 };
 

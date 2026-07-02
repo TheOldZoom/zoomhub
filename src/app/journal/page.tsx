@@ -11,14 +11,14 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Journal",
   description:
-    "Thoughts, notes, and updates from Xavier Zoom Boulanger — developer and photographer.",
+    "Xavier Zoom Boulanger's journal, where he shares his ideas, things he finds interesting, random thoughts, and vents.",
   alternates: {
     canonical: "/journal",
   },
   openGraph: {
     title: "Journal | Xavier Zoom Boulanger",
     description:
-      "Thoughts, notes, and updates from Xavier Zoom Boulanger — developer and photographer.",
+      "Xavier Zoom Boulanger's journal, where he shares his ideas, things he finds interesting, random thoughts, and vents.",
     url: "https://zoomhub.xyz/journal",
     type: "website",
   },
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Journal | Xavier Zoom Boulanger",
     description:
-      "Thoughts, notes, and updates from Xavier Zoom Boulanger — developer and photographer.",
+      "Xavier Zoom Boulanger's journal, where he shares his ideas, things he finds interesting, random thoughts, and vents.",
   },
 };
 
