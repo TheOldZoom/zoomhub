@@ -65,3 +65,20 @@ export async function getAllJournalsForAdmin() {
     (a, b) => getSortDate(b).getTime() - getSortDate(a).getTime(),
   );
 }
+
+export async function getJournalsForFeed() {
+  const journals = await prisma.journal.findMany({
+    where: { publishedAt: { not: null } },
+    select: {
+      title: true,
+      slug: true,
+      content: true,
+      publishedAt: true,
+      updatedAt: true,
+    },
+    orderBy: { publishedAt: "desc" },
+    take: 20,
+  });
+
+  return journals;
+}

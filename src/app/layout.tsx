@@ -41,6 +41,9 @@ export const metadata: Metadata = {
   publisher: "Xavier Zoom Boulanger",
   alternates: {
     canonical: siteUrl,
+    types: {
+      "application/rss+xml": [{ url: `${siteUrl}/rss.xml`, title: "RSS Feed" }],
+    },
   },
   robots: {
     index: true,
